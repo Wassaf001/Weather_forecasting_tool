@@ -1,7 +1,10 @@
+from flask import Flask, render_template, request
 import requests
 
+app = Flask(__name__)
+
 def get_weather_forecast(city):
-    api_key = "API_KEY"  
+    api_key = "API_KEY" 
     base_url = "https://api.openweathermap.org/data/2.5/weather"
 
     try:
@@ -9,24 +12,28 @@ def get_weather_forecast(city):
         response.raise_for_status()
         weather_data = response.json()
 
-        # Use Copilot suggestion for extracting temperature, humidity, and wind speed
         temperature = weather_data["main"]["temp"]
         humidity = weather_data["main"]["humidity"]
         wind_speed = weather_data["wind"]["speed"]
 
-        # Print the weather forecast
-        print(f"Weather Forecast for {city}:")
-        print(f"Temperature: {temperature} K")
-        print(f"Humidity: {humidity}%")
-        print(f"Wind Speed: {wind_speed} m/s")
+        return {
+            "city": city,
+            "temperature": temperature,
+            "humidity": humidity,
+            "wind_speed": wind_speed,
+        }
 
     except requests.exceptions.RequestException as err:
-        # Use Copilot suggestion for error handling
-        print(f"Error fetching weather data: {err}")
+        return {"error": str(err)}
 
-# Get city name from user as input
-city_name = input("Enter the city name: ")
+@app.route("/", methods=["GET", "POST"])
+def index():
+    if request.method == "POST":
+        city_name = request.form["city_name"]
+        weather_data = get_weather_forecast(city_name)
+        return render_template("index.html", weather_data=weather_data)
 
-# Call the function to retrieve and display the weather forecast
-get_weather_forecast(city_name)
+    return render_template("index.html", weather_data=None)
 
+if __name__ == "__main__":
+    app.run(debug=True)
