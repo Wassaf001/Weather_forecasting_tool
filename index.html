@@ -91,7 +91,7 @@
             <input type="submit" value="Get Weather">
         </form>
         {% if weather_data %}
-            <h2>Weather Forecast for {{ weather_data}}:</h2>
+            <h2>Weather Forecast for: {{ weather_data['city']}}</h2>
             <p>Temperature: {{ weather_data['temperature'] }} K</p>
             <p>Humidity: {{ weather_data['humidity'] }}%</p>
             <p>Wind Speed: {{ weather_data['wind_speed'] }} m/s</p>
